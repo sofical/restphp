@@ -2,6 +2,7 @@
 namespace restphp\core;
 
 use restphp\http\RestHttpMethod;
+use restphp\utils\RestFileUtil;
 
 /**
  * 构建工具
@@ -10,9 +11,9 @@ use restphp\http\RestHttpMethod;
  * @package restphp\core
  */
 class RestBuild{
-    public static function run() {
+    public static function run($strVersion = "default") {
         //先清构建目标目录
-        self::_delAllFile(RestConstant::REST_TARGET() . DIRECTORY_SEPARATOR);
+        self::_delAllFile(RestConstant::REST_TARGET() . DIRECTORY_SEPARATOR . $strVersion . DIRECTORY_SEPARATOR);
 
         //扫描构建目录
         $arrFiles = array();
@@ -73,7 +74,7 @@ class RestBuild{
         }
 
         //开始分创建构建结果
-        self::_buildFinal();
+        self::_buildFinal($strVersion);
 
         echo "build success!";
     }
@@ -83,19 +84,7 @@ class RestBuild{
      * @param $strPath
      */
     private static function _delAllFile($strPath) {
-        if (is_dir($strPath)) {
-            $nodes = glob($strPath . '*');
-            foreach($nodes as $node) {
-                if (is_dir($node)) {
-                    self::_delAllFile($node . DIRECTORY_SEPARATOR);
-                    rmdir($node);
-                    continue;
-                }
-                if ($node != '.' && $node != '..') {
-                    unlink($node);
-                }
-            }
-        }
+        RestFileUtil::delAllFile($strPath);
     }
 
     //构建缓存变量
@@ -152,7 +141,7 @@ class RestBuild{
     /**
      * 构建成文件
      */
-    private static function _buildFinal() {
+    private static function _buildFinal($strVersion = "default") {
         if(empty(self::$_arrMaps)) {
             return;
         }
@@ -160,7 +149,7 @@ class RestBuild{
         //构建Map
         foreach(self::$_arrMaps as $strMethod => $arrMaps) {
             $strMap = "<?php\nreturn array(";
-            $strMethodMapFileName = RestConstant::REST_TARGET() . DIRECTORY_SEPARATOR . $strMethod . '.php';
+            $strMethodMapFileName = RestConstant::REST_TARGET() . DIRECTORY_SEPARATOR . $strVersion . DIRECTORY_SEPARATOR . $strMethod . '.php';
             $intPos = 0;
             foreach($arrMaps as $strUriKey => $arrMap) {
                 $strMap .= "\n\t'" . $strUriKey . "'=>array(";
@@ -181,7 +170,7 @@ class RestBuild{
                 ++$intPos != count($arrMaps) and $strMap .= ",";
 
                 //构建路由入口
-                $strRouteFileDir = RestConstant::REST_TARGET() . DIRECTORY_SEPARATOR . $strMethod . DIRECTORY_SEPARATOR;
+                $strRouteFileDir = RestConstant::REST_TARGET() . DIRECTORY_SEPARATOR . $strVersion . DIRECTORY_SEPARATOR . $strMethod . DIRECTORY_SEPARATOR;
                 if (!file_exists($strRouteFileDir)) {
                     mkdir($strRouteFileDir);
                 }

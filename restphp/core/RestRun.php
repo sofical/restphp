@@ -12,7 +12,7 @@ use restphp\biz\RestErrorCode;
  * @package restphp\core
  */
 class RestRun{
-    public static function run() {
+    public static function run($strVersion = "default") {
         //Http请求数据预处理
         RestHttpRequest::init();
 
@@ -28,7 +28,10 @@ class RestRun{
         $nUrlParamPOS = strpos($strUri, "?");
         $strUri = strpos($strUri, "?") > -1 ? substr($strUri, 0, $nUrlParamPOS) : $strUri;
 
-        $strMapFile = RestConstant::REST_TARGET() . DIRECTORY_SEPARATOR . $strMethod . '.php';
+        //路由配置根目录
+        $strRouterRoot = RestConstant::REST_TARGET() . DIRECTORY_SEPARATOR . $strVersion . DIRECTORY_SEPARATOR . $strMethod;
+
+        $strMapFile = $strRouterRoot . '.php';
         $arrMap = array();
         if (file_exists($strMapFile)) {
             $arrMap = include($strMapFile);
@@ -43,8 +46,7 @@ class RestRun{
         $strUriKey = str_replace('/', '_', $strUri);
 
         if (isset($arrMap[$strUriKey])) {
-            $strFileEnter = RestConstant::REST_TARGET() . DIRECTORY_SEPARATOR .
-                $strMethod . DIRECTORY_SEPARATOR . $arrMap[$strUriKey]['filename'] . ".php";
+            $strFileEnter = $strRouterRoot . DIRECTORY_SEPARATOR . $arrMap[$strUriKey]['filename'] . ".php";
             include($strFileEnter);
             return;
         } else {
@@ -61,8 +63,7 @@ class RestRun{
                         $strPathVal = str_replace('/', '', $arrMatched[$nPos]);
                         RestHttpRequest::setPathValue($arrPathParam[$nPos-1], $strPathVal);
                     }
-                    $strFileEnter = RestConstant::REST_TARGET() . DIRECTORY_SEPARATOR .
-                        $strMethod . DIRECTORY_SEPARATOR . $arrMatchedMap['filename'] . ".php";
+                    $strFileEnter = $strRouterRoot . DIRECTORY_SEPARATOR . $arrMatchedMap['filename'] . ".php";
                     include($strFileEnter);
                     return;
                 }
@@ -87,8 +88,7 @@ class RestRun{
                         $strPathVal = str_replace('/', '', $arrMatched[$nPos]);
                         RestHttpRequest::setPathValue($arrPathParam[$nPos-1], $strPathVal);
                     }
-                    $strFileEnter = RestConstant::REST_TARGET() . DIRECTORY_SEPARATOR .
-                        $strMethod . DIRECTORY_SEPARATOR . $arrMatchedMap['filename'] . ".php";
+                    $strFileEnter = $strRouterRoot . DIRECTORY_SEPARATOR . $arrMatchedMap['filename'] . ".php";
                     include($strFileEnter);
                     return;
                 }
