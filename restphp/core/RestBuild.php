@@ -2,6 +2,7 @@
 namespace restphp\core;
 
 use restphp\http\RestHttpMethod;
+use restphp\utils\RestStringUtils;
 
 /**
  * 构建工具
@@ -31,6 +32,7 @@ class RestBuild{
             $arrMatched = self::_getMatchs($strFileContent, '#RequestMapping', '{');
 
             if (!empty($arrMatched)) {
+
                 $strClassRouteUri = "/";
                 //首选判断是否为类路由
                 $strClassTester = "";
@@ -60,12 +62,16 @@ class RestBuild{
                         }
 
                         $strMethod = self::_getMappingMethod($strMatched);
+
+                        $strBefore = self::_getMappingBeforeFunction($strMatched);
+                        $strAfter = self::_getMappingAafterFunction($strMatched);
+
                         if ($strMethod == "") {
                             foreach(RestHttpMethod::FULL_HTTP_METHODS() as $strMethod) {
-                                self::_buildFace($strNameSpace, $strClassName, $strFuncName, $strClassRouteUri . $strFuncUri, $strMethod);
+                                self::_buildFace($strNameSpace, $strClassName, $strFuncName, $strClassRouteUri . $strFuncUri, $strMethod, $strBefore, $strAfter);
                             }
                         } else {
-                            self::_buildFace($strNameSpace, $strClassName, $strFuncName, $strClassRouteUri . $strFuncUri, $strMethod);
+                            self::_buildFace($strNameSpace, $strClassName, $strFuncName, $strClassRouteUri . $strFuncUri, $strMethod, $strBefore, $strAfter);
                         }
                     }
                 }
@@ -108,8 +114,11 @@ class RestBuild{
      * @param $strFunctionName
      * @param $strUri
      * @param $strMethod
+     * @param $strBefore
+     * @param $strAfter
      */
-    private static function _buildFace($strNameSpace, $strClassName, $strFunctionName, $strUri, $strMethod) {
+    private static function _buildFace($strNameSpace, $strClassName, $strFunctionName, $strUri, $strMethod,
+                                       $strBefore, $strAfter) {
         $strUriKey = str_replace('//', '/', $strUri);
         $arrToReplace = self::_getMatchs($strUriKey, '$', '/');
         $strMatchKey = $strUriKey;
@@ -145,7 +154,9 @@ class RestBuild{
             'filename' => $strFileName,
             'namespace' => $strNameSpace,
             'class' => $strClassName,
-            'function' => $strFunctionName
+            'function' => $strFunctionName,
+            'before' => $strBefore,
+            'after' => $strAfter
         );
     }
 
@@ -187,8 +198,14 @@ class RestBuild{
                 }
                 $strRouteFileName = $strRouteFileDir . $arrMap['filename'] . '.php';
                 $strFileContent = "<?php\nuse " . $arrMap['namespace'] . '\\' . $arrMap['class'] . ';';
+                if (!RestStringUtils::isBlank($arrMap['before'])) {
+                    $strFileContent .= "\n" . $arrMap['before'] . '();';
+                }
                 $strFileContent .= "\n" . '$client = new ' . $arrMap['class'] . '();';
                 $strFileContent .= "\n" . '$client->' . $arrMap['function'] . '();';
+                if (!RestStringUtils::isBlank($arrMap['after'])) {
+                    $strFileContent .= "\n" . $arrMap['after'] . '();';
+                }
                 file_put_contents($strRouteFileName, $strFileContent);
             }
             $strMap .= "\n\t);";
@@ -216,6 +233,23 @@ class RestBuild{
         $strMethod = "";
         self::_getMatch($strContent, 'method="', '"', $strMethod, false);
         return strtoupper($strMethod);
+    }
+
+    /**
+     * 获取前置处理方法
+     * @param $strContent
+     * @return string
+     */
+    private static function _getMappingBeforeFunction($strContent) {
+        $strFunction = "";
+        self::_getMatch($strContent, 'before="', '"', $strFunction, false);
+        return $strFunction;
+    }
+
+    private static function _getMappingAafterFunction($strContent) {
+        $strFunction = "";
+        self::_getMatch($strContent, 'after="', '"', $strFunction, false);
+        return $strFunction;
     }
 
     /**

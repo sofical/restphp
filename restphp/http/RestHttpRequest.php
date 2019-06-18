@@ -34,7 +34,9 @@ final class RestHttpRequest{
         $strBody = file_get_contents('php://input');
         if ($strBody != null) {
             $strContentType = self::getServer('CONTENT_TYPE');
-            switch($strContentType) {
+            $arrType = explode(";", $strContentType);
+            $strType = $arrType[0];
+            switch($strType) {
                 case RestContentType::JSON:
                     self::$_oBody = json_decode($strBody, true);
                     break;

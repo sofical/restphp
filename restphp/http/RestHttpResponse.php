@@ -3,6 +3,7 @@ namespace restphp\http;
 
 use restphp\biz\RestContentType;
 use restphp\biz\RestErrorCode;
+use restphp\i18n\RestLangUtils;
 use restphp\utils\RestUUIDUtil;
 use restphp\utils\RestXmlUtil;
 
@@ -13,6 +14,23 @@ use restphp\utils\RestXmlUtil;
  * @package restphp\http
  */
 final class RestHttpResponse{
+    private static $__charset = 'utf-8';
+    /**
+     * 设置编码.
+     * @param string $charset 编码
+     */
+    public static function setCharset($charset = 'utf-8') {
+        self::$__charset = $charset;
+    }
+
+    /**
+     * 获取编码设置.
+     * @return string
+     */
+    public static function getCharset() {
+        return "charset=" . self::$__charset;
+    }
+
     /**
      * 普通输出
      * @param $mxResponse
@@ -54,32 +72,34 @@ final class RestHttpResponse{
     }
 
     public static function html($strResponseBody, $strHttpStatus = '200', $arrHeader = array()) {
-        $arrHeader['Content-Type'] = RestContentType::HTML;
+        $arrHeader['Content-Type'] = RestContentType::HTML . ";" . self::getCharset();
         self::_output($strHttpStatus, $arrHeader, $strResponseBody);
     }
 
     public static function json($arrResponseBody, $strHttpStatus = '200', $arrHeader = array()) {
-        $arrHeader['Content-Type'] = RestContentType::JSON;
-        self::_output($strHttpStatus, json_encode($arrResponseBody), $arrHeader);
+        $arrHeader['Content-Type'] = RestContentType::JSON . ";" . self::getCharset();
+        self::_output($strHttpStatus, $arrHeader, json_encode($arrResponseBody));
     }
 
     public static function xml($arrResponseBody, $strHttpStatus = '200', $arrHeader = array()) {
-        $arrHeader['Content-Type'] = RestContentType::XML;
-        self::_output($strHttpStatus, RestXmlUtil::arrToXml($arrResponseBody), $arrHeader);
+        $arrHeader['Content-Type'] = RestContentType::XML . ";" . self::getCharset();
+        self::_output($strHttpStatus, $arrHeader, RestXmlUtil::arrToXml($arrResponseBody));
     }
 
     public static function htmlErr($strErrorReason, $strHttpStatus = '400', $arrHeader = array()) {
-        $arrHeader['Content-Type'] = RestContentType::HTML;
-        self::_output($strHttpStatus, $strErrorReason, $arrHeader);
+        $arrHeader['Content-Type'] = RestContentType::HTML . ";" . self::getCharset();
+        self::_output($strHttpStatus, $arrHeader, $strErrorReason);
         die();
     }
 
     public static function jsonErr($strErrorReason, $strCode = RestErrorCode::INVALID_ARGUMENT, $strHttpStatus = '400' , $arrHeader = array()) {
-        $arrHeader['Content-Type'] = RestContentType::JSON;
+        $arrHeader['Content-Type'] = RestContentType::JSON . ";" . self::getCharset();
         $arrResponseBody = array(
+            'result'=>'fail',
             'host' => RestHttpRequest::getServer('HTTP_HOST'),
             'code' => $strCode,
             'message' => $strErrorReason,
+            'msg' => $strErrorReason,
             'server_time' => SYS_MICRO_TIME,
             'id' => RestUUIDUtil::guid()
         );
@@ -88,11 +108,13 @@ final class RestHttpResponse{
     }
 
     public static function xmlErr($strErrorReason, $strCode = RestErrorCode::INVALID_ARGUMENT, $strHttpStatus = '400', $arrHeader = array()) {
-        $arrHeader['Content-Type'] = RestContentType::XML;
+        $arrHeader['Content-Type'] = RestContentType::XML . ";" . self::getCharset();
         $arrResponseBody = array(
+            'result'=>'fail',
             'host' => RestHttpRequest::getServer('HTTP_HOST'),
             'code' => $strCode,
             'message' => $strErrorReason,
+            'msg' => $strErrorReason,
             'server_time' => SYS_MICRO_TIME,
             'id' => RestUUIDUtil::guid()
         );
@@ -107,6 +129,6 @@ final class RestHttpResponse{
                 header($name . ':' . $val);
             }
         }
-        echo $strResponseBody;
+        echo RestLangUtils::replace($strResponseBody);
     }
 }

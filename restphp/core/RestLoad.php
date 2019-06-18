@@ -22,11 +22,15 @@ class RestLoad {
     public static function _loadRestphp($strName) {
         foreach (self::$arrMap as $arrRoute) {
             if (substr($strName, 0, strlen($arrRoute['tag'])) == $arrRoute['tag']) {
-                include_once($arrRoute['dir'].substr($strName, strlen($arrRoute['tag'])) . '.php');
+                $filePath = $arrRoute['dir'] . substr($strName, strlen($arrRoute['tag'])) . '.php';
+                $filePath = str_replace("\\", DIRECTORY_SEPARATOR, $filePath);
+                $filePath = str_replace(DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $filePath);
+                include_once($filePath);
                 return true;
             }
         }
         $strMaybe = $strName . '.php';
+        $strMaybe = str_replace("\\", DIRECTORY_SEPARATOR, $strMaybe);
         if (file_exists($strMaybe)) {
             include_once($strMaybe);
             return true;
