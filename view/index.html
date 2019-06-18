@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rest PHP</title>
+    <script src="static/js/lib/jquery.min.js"></script>
+    <script src="static/js/lib/rest.request.js"></script>
+    <script>
+        $(function () {
+            RestRequest.post("/hello", {}, function (data) {
+                $(document.body).html(data.data);
+            });
+        });
+    </script>
+</head>
+<body>
+
+</body>
+</html>

@@ -57,5 +57,14 @@ return array(
 		'namespace'=>'php\controller',
 		'class'=>'ControllerIndex',
 		'function'=>'reportInfo'
+		),
+	'_hello_'=>array(
+		'path_param'=>array(
+			),
+		'preg_match'=>'\/hello\/RESTPHPURISIGEEND',
+		'filename'=>'__hello_',
+		'namespace'=>'php\controller',
+		'class'=>'HelloWorldController',
+		'function'=>'helloGET'
 		)
 	);
