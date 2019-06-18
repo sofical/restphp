@@ -5,4 +5,5 @@
 
 # RestPHP的特点
 支持路径参数，如：/users/$userId 或 /users/$userId/orders/$orderId
+
 支持各种HTTP Method，支持Form表单、json、Xml的报文请求
