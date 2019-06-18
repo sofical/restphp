@@ -22,22 +22,15 @@
 
 3、新建控制器类：php\controller\HelloWorldController.php
 
-<?php
-namespace php\controller;
-use restphp\http\RestHttpResponse;
-
-/**
- * Created by zj.
- * User: zj
- * Date: 2019/6/18 0018
- * Time: 下午 1:44
- */
-class HelloWorldController {
-    #RequestMapping(value="/hello", method="GET")
-    public function hello() {
-        RestHttpResponse::html("Hello world!");
+    <?php
+    namespace php\controller;
+    use restphp\http\RestHttpResponse;
+    class HelloWorldController {
+        #RequestMapping(value="/hello", method="GET")
+        public function hello() {
+            RestHttpResponse::html("Hello world!");
+        }
     }
-}
 
 4、在浏览器中访问build.php，编译路径映射，如：http://localhost/build.php
 
