@@ -35,3 +35,6 @@
 4、在浏览器中访问build.php，编译路径映射，如：http://localhost/build.php
 
 5、访问：http://localhost/hello 果看结果：Hello world!
+
+# 路径映身编写规则
+
