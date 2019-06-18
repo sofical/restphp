@@ -14,13 +14,8 @@
 2、配置URL重新规则，将所有请求地址重写到indxt.php。如，Nginx重写配置：
 
     location / {
-
-			index  index.php;
-      
-            if (!-e $request_filename) {
-            
-                rewrite ^/(.*)$ /index.php?$1 last;
-                
-            }
-            
-		}
+	index  index.php;
+        if (!-e $request_filename) {            
+            rewrite ^/(.*)$ /index.php?$1 last;                
+        }            
+    }
