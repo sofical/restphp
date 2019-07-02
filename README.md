@@ -62,4 +62,4 @@
 
 3、MySQL数据库通过$GOLBAL['_DB_MYSQL '] 指定，配置写法参考：config\env.config.php
 
-4、提供前端RESTFul基本请求封装，详细参考：view\index.php
+4、提供前端RESTFul基本请求封装，详细参考：view\index.html
