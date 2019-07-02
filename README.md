@@ -46,7 +46,7 @@
 
 如果类和方法名都有指定，则方法访问路径等于类指定路径+方法指定路径。
 
-路径值中可以设置路径参数，命名规则与php变量命名一致，以$符号开始，如：/users/$userId/avatar，方法中使用RestHttpRequest::getPathValue方法获取，如：$userId = = RestHttpRequest::getPathValue("userId");
+路径值中可以设置路径参数，命名规则与php变量命名一致，以$符号开始，如：/users/$userId/avatar，方法中使用RestHttpRequest::getPathValue方法获取，如：$userId = RestHttpRequest::getPathValue("userId");
 
 3、#RequestMapping方法参数method，可选参数。表示方法支持的HTTP Method访问值
 
