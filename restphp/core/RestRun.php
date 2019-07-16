@@ -23,7 +23,13 @@ class RestRun{
         $strMethod = strtoupper($strMethod);
 
         //路由匹配
-        $strUri = RestHttpRequest::getServer('REQUEST_URI') == null ? '/' : RestHttpRequest::getServer('REQUEST_URI');
+        $strUri = '/';
+        if (RestHttpRequest::getServer('REQUEST_URI') != null) {
+            $strUri = RestHttpRequest::getServer('REQUEST_URI');
+        }
+        if (RestHttpRequest::getServer('HTTP_X_ORIGINAL_URL') != null) {
+            $strUri = RestHttpRequest::getServer('HTTP_X_ORIGINAL_URL');
+        }
 
         $nUrlParamPOS = strpos($strUri, "?");
         $strUri = strpos($strUri, "?") > -1 ? substr($strUri, 0, $nUrlParamPOS) : $strUri;
