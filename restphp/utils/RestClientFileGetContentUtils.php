@@ -29,7 +29,7 @@ class RestClientFileGetContentUtils {
             $opts['http']['header'] = $header_string;
         }
         $context = stream_context_create($opts);
-        $body = @file_get_contents($url, false, $context);
+        $body = file_get_contents($url, false, $context);
         return $body;
     }
 
@@ -65,7 +65,7 @@ class RestClientFileGetContentUtils {
             $opts['http']['content'] = $query_string;
         }
         $context = stream_context_create($opts);
-        $body = @file_get_contents($url, false, $context);
+        $body = file_get_contents($url, false, $context);
         return $body;
     }
 }

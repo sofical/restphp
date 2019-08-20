@@ -1,52 +1,12 @@
 <?php
 return array(
-	'_v1_'=>array(
+	'_domain_'=>array(
 		'path_param'=>array(
 			),
-		'preg_match'=>'\/v1\/RESTPHPURISIGEEND',
-		'filename'=>'_v1_',
-		'namespace'=>'php\controller',
-		'class'=>'ControllerIndex',
-		'function'=>'create'
-		),
-	'_v1_$test_id_'=>array(
-		'path_param'=>array(
-				'test_id'
-			),
-		'preg_match'=>'\/v1\/(.*)RESTPHPURIALLEND',
-		'filename'=>'_v1_$test_id_',
-		'namespace'=>'php\controller',
-		'class'=>'ControllerIndex',
-		'function'=>'info'
-		),
-	'_v1_$test_id_report_'=>array(
-		'path_param'=>array(
-				'test_id'
-			),
-		'preg_match'=>'\/v1\/(.*)\/report\/RESTPHPURISIGEEND',
-		'filename'=>'_v1_$test_id_report_',
-		'namespace'=>'php\controller',
-		'class'=>'ControllerIndex',
-		'function'=>'inf'
-		),
-	'_v1_$test_id_report_$report_id_'=>array(
-		'path_param'=>array(
-				'test_id',
-				'report_id'
-			),
-		'preg_match'=>'\/v1\/(.*)\/report\/(.*)RESTPHPURIALLEND',
-		'filename'=>'_v1_$test_id_report_$report_id_',
-		'namespace'=>'php\controller',
-		'class'=>'ControllerIndex',
-		'function'=>'reportInfo'
-		),
-	'_hello_'=>array(
-		'path_param'=>array(
-			),
-		'preg_match'=>'\/hello\/RESTPHPURISIGEEND',
-		'filename'=>'__hello_',
-		'namespace'=>'php\controller',
-		'class'=>'HelloWorldController',
-		'function'=>'helloPOST'
+		'preg_match'=>'\/domain\/RESTPHPURISIGEEND',
+		'filename'=>'_domain_',
+		'namespace'=>'php\controller\domain',
+		'class'=>'ApiDomainController',
+		'function'=>'register'
 		)
 	);

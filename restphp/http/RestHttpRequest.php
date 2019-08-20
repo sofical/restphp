@@ -79,6 +79,20 @@ final class RestHttpRequest{
     }
 
     /**
+     * 获取所有的HTTP头.
+     * @return array.
+     */
+    public static function getHttpHeaders() {
+        $arrHead = array();
+        foreach ($_SERVER as $strKey => $mixValue) {
+            if (strtoupper(substr($strKey,0, 5)) == 'HTTP_') {
+                $arrHead[$strKey] = $mixValue;
+            }
+        }
+        return $arrHead;
+    }
+
+    /**
      * 获取请求内容
      * @return null | String
      */
@@ -102,6 +116,10 @@ final class RestHttpRequest{
      */
     public static function getPost($strName) {
         return isset(self::$_arrPost[$strName]) ? self::$_arrPost[$strName] : null;
+    }
+
+    public static function getPosts() {
+        return self::$_arrPost;
     }
 
     /**

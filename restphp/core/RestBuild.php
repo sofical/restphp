@@ -47,31 +47,43 @@ class RestBuild{
                     $strFuncTester = "";
                     self::_getMatch($strMatched, 'function', ' ', $strFuncTester);
                     if ($strFuncTester == 'function') {
-                        $strFuncUri = self::_getMappingUri($strMatched);
-                        if (!isset($strFuncUri[0]) || $strFuncUri[0] != '/') {
-                            $strFuncUri = '/' . $strFuncUri;
-                        }
-                        if ($strFuncUri[strlen($strFuncUri)-1] != '/') {
-                            $strFuncUri .= '/';
-                        }
 
-                        $strFuncName = self::_getFunctionName($strMatched);
-                        $strFuncName = trim($strFuncName);
-                        if ('' == $strFuncName) {
-                            echo "build error in class {$strNameSpace}\\{$strClassName} of mapping text: \"{$strMatched}\"";die();
+                        $mixFuncUri = self::_getMappingUri($strMatched);
+                        $arrUri = array();
+                        if (is_array($mixFuncUri)) {
+                            $arrUri = $mixFuncUri;
+                        } else {
+                            $arrUri[] = $mixFuncUri;
                         }
 
-                        $strMethod = self::_getMappingMethod($strMatched);
+                        foreach ($arrUri as $strFuncUri) {
+                            //$strFuncUri = self::_getMappingUri($strMatched);
+                            if (!isset($strFuncUri[0]) || $strFuncUri[0] != '/') {
+                                $strFuncUri = '/' . $strFuncUri;
+                            }
+                            if ($strFuncUri[strlen($strFuncUri) - 1] != '/') {
+                                $strFuncUri .= '/';
+                            }
 
-                        $strBefore = self::_getMappingBeforeFunction($strMatched);
-                        $strAfter = self::_getMappingAafterFunction($strMatched);
+                            $strFuncName = self::_getFunctionName($strMatched);
+                            $strFuncName = trim($strFuncName);
+                            if ('' == $strFuncName) {
+                                echo "build error in class {$strNameSpace}\\{$strClassName} of mapping text: \"{$strMatched}\"";
+                                die();
+                            }
 
-                        if ($strMethod == "") {
-                            foreach(RestHttpMethod::FULL_HTTP_METHODS() as $strMethod) {
+                            $strMethod = self::_getMappingMethod($strMatched);
+
+                            $strBefore = self::_getMappingBeforeFunction($strMatched);
+                            $strAfter = self::_getMappingAafterFunction($strMatched);
+
+                            if ($strMethod == "") {
+                                foreach (RestHttpMethod::FULL_HTTP_METHODS() as $strMethod) {
+                                    self::_buildFace($strNameSpace, $strClassName, $strFuncName, $strClassRouteUri . $strFuncUri, $strMethod, $strBefore, $strAfter);
+                                }
+                            } else {
                                 self::_buildFace($strNameSpace, $strClassName, $strFuncName, $strClassRouteUri . $strFuncUri, $strMethod, $strBefore, $strAfter);
                             }
-                        } else {
-                            self::_buildFace($strNameSpace, $strClassName, $strFuncName, $strClassRouteUri . $strFuncUri, $strMethod, $strBefore, $strAfter);
                         }
                     }
                 }
@@ -220,6 +232,16 @@ class RestBuild{
      */
     private static function _getMappingUri($strContent) {
         $strUri = "";
+        self::_getMatch($strContent, 'value=[', ']', $strUri, false);
+        if ($strUri != '') {
+            $arrUriSource = explode(",", $strUri);
+            $arrUri = array();
+            foreach ($arrUriSource as $strUri) {
+                $strUri = trim($strUri);
+                $arrUri[] = str_replace('"', '', $strUri);
+            }
+            return $arrUri;
+        }
         self::_getMatch($strContent, 'value="', '"', $strUri, false);
         return $strUri;
     }
