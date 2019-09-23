@@ -33,13 +33,16 @@ class RestBuild{
 
             if (!empty($arrMatched)) {
 
-                $strClassRouteUri = "/";
+                $mixClassRouteUri = array("/");
                 //首选判断是否为类路由
                 $strClassTester = "";
                 self::_getMatch($arrMatched[0], 'class', ' ', $strClassTester);
                 if ($strClassTester == 'class') {
-                    $strClassRouteUri = self::_getMappingUri($arrMatched[0]);
-                    $strClassRouteUri == '' and $strClassRouteUri = "/";
+                    $mixClassRouteUri = self::_getMappingUri($arrMatched[0]);
+                    $mixClassRouteUri == '' and $mixClassRouteUri = array("/");
+                }
+                if (is_string($mixClassRouteUri)) {
+                    $mixClassRouteUri = array($mixClassRouteUri);
                 }
 
                 foreach($arrMatched as $strMatched) {
@@ -79,10 +82,14 @@ class RestBuild{
 
                             if ($strMethod == "") {
                                 foreach (RestHttpMethod::FULL_HTTP_METHODS() as $strMethod) {
-                                    self::_buildFace($strNameSpace, $strClassName, $strFuncName, $strClassRouteUri . $strFuncUri, $strMethod, $strBefore, $strAfter);
+                                    foreach ($mixClassRouteUri as $strClassRouteUri) {
+                                        self::_buildFace($strNameSpace, $strClassName, $strFuncName, $strClassRouteUri . $strFuncUri, $strMethod, $strBefore, $strAfter);
+                                    }
                                 }
                             } else {
-                                self::_buildFace($strNameSpace, $strClassName, $strFuncName, $strClassRouteUri . $strFuncUri, $strMethod, $strBefore, $strAfter);
+                                foreach ($mixClassRouteUri as $strClassRouteUri) {
+                                    self::_buildFace($strNameSpace, $strClassName, $strFuncName, $strClassRouteUri . $strFuncUri, $strMethod, $strBefore, $strAfter);
+                                }
                             }
                         }
                     }
@@ -139,7 +146,8 @@ class RestBuild{
             foreach($arrToReplace as $strReplace) {
                 $strPathParam = substr($strReplace, 1);
                 if (in_array($strPathParam, $arrPathParam)) {
-                    echo "build error in uri: {$strUri} and method {$strMethod}; There are two or more same path params;";die();
+                    echo "build error in uri: {$strUri} and method {$strMethod}; There are two or more same path params;\n";
+                    die();
                 }
                 $arrPathParam[] = $strPathParam;
                 $strMatchKey = str_replace($strReplace, '(.*)', $strMatchKey);
@@ -153,12 +161,24 @@ class RestBuild{
         }
 
         $strUriKey = str_replace('/', '_', $strUriKey);
+        $strFileName = str_replace('/', '_', $strUri);
 
         if (isset(self::$_arrMaps[$strMethod]) && isset(self::$_arrMaps[$strMethod][$strUriKey])) {
-            echo "build error in uri: {$strUri} and method {$strMethod}";die();
+            echo "build error in uri: {$strUri} and method {$strMethod}; There are two or more same path params; The exist Mapping is :\n";
+            var_dump(self::$_arrMaps[$strMethod][$strUriKey]);
+            echo "\nCurrent Mapping is :";
+            var_dump(array(
+                'path_param' => $arrPathParam,
+                'preg_match' => $strMatchKey,
+                'filename' => $strFileName,
+                'namespace' => $strNameSpace,
+                'class' => $strClassName,
+                'function' => $strFunctionName,
+                'before' => $strBefore,
+                'after' => $strAfter
+            ));
+            die();
         }
-
-        $strFileName = str_replace('/', '_', $strUri);
 
         self::$_arrMaps[$strMethod][$strUriKey] = array(
             'path_param' => $arrPathParam,

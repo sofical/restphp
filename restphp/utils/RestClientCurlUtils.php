@@ -91,6 +91,28 @@ class RestClientCurlUtils {
         return $data;
     }
 
+    public static function postFile($url, $query, $arrHeader = array(), $inTimeout = 30){
+        if(function_exists('curl_init')){
+            $ch = curl_init();
+            $arrHeaderFinal = self::__formatHeader($arrHeader);
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $arrHeaderFinal);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_HEADER, true);
+            $data = curl_exec($ch);
+            $arrResult = self::formatV2Result($ch, $data);
+            curl_close($ch);
+            return $arrResult;
+        }else{
+            throw new RestException("Fatal error: not support curl");
+        }
+        return $data;
+    }
+
     private static function formatV2Result($ch, $data) {
         $intHeaderSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $strHeader = substr($data, 0, $intHeaderSize);
@@ -122,9 +144,14 @@ class RestClientCurlUtils {
     private static function __formatHeader($arrHeader) {
         $arrNew = array();
         foreach ($arrHeader as $strKey=>$strValue)  {
-            $strKey = str_replace("HTTP_", "", $strKey);
-            $arrNew[] = $strKey.":".$strValue;
+            if (substr($strKey, 0, strlen("HTTP_")) == "HTTP_") {
+                //$strKey = str_replace("HTTP_", "", $strKey);
+                $strKey = substr($strKey, strlen("HTTP_"));
+                $strKey = str_replace("_", "-", $strKey);
+            }
+            $arrNew[] = $strKey.": ".$strValue;
         }
+        //$arrNew[] = "content-type: application/x-www-form-urlencoded; charset=UTF-8";
         return $arrNew;
     }
 }

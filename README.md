@@ -48,6 +48,8 @@
 
 路径值中可以设置路径参数，命名规则与php变量命名一致，以$符号开始，如：/users/$userId/avatar，方法中使用RestHttpRequest::getPathValue方法获取，如：$userId = RestHttpRequest::getPathValue("userId");
 
+如果该方法支持多个地址同时访问，那么value值可以以数组形式描述，如：#RequestMapping(value=["/hello", "/sayHello"])
+
 3、#RequestMapping方法参数method，可选参数。表示方法支持的HTTP Method访问值
 
 4、#RequestMapping方法参数before，可选参数。前置处理方法。

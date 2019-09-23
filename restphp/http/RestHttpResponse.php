@@ -92,7 +92,7 @@ final class RestHttpResponse{
         die();
     }
 
-    public static function jsonErr($strErrorReason, $strCode = RestErrorCode::INVALID_ARGUMENT, $strHttpStatus = '400' , $arrHeader = array()) {
+    public static function jsonErr($strErrorReason, $strCode = RestErrorCode::INVALID_ARGUMENT, $strHttpStatus = '400' , $arrHeader = array(), $arrAppend = array()) {
         $arrHeader['Content-Type'] = RestContentType::JSON . ";" . self::getCharset();
         $arrResponseBody = array(
             'result'=>'fail',
@@ -103,6 +103,7 @@ final class RestHttpResponse{
             'server_time' => SYS_MICRO_TIME,
             'id' => RestUUIDUtil::guid()
         );
+        $arrResponseBody = array_merge($arrResponseBody, $arrAppend);
         self::_output($strHttpStatus, $arrHeader, json_encode($arrResponseBody));
         die();
     }

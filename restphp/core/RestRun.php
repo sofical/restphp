@@ -34,6 +34,15 @@ class RestRun{
         $nUrlParamPOS = strpos($strUri, "?");
         $strUri = strpos($strUri, "?") > -1 ? substr($strUri, 0, $nUrlParamPOS) : $strUri;
 
+        $arrFilter = isset($GLOBALS['_FILTER']) ? $GLOBALS['_FILTER'] : array();
+        if (!empty($arrFilter)) {
+            foreach ($arrFilter as $arrItem) {
+                //兼容php7：变量函数需要先固定，不能二次读取
+                $function = $arrItem['function'];
+                $arrItem['class']::$function($strUri);
+            }
+        }
+
         $strMapFile = RestConstant::REST_TARGET() . DIRECTORY_SEPARATOR . $strMethod . '.php';
         $arrMap = array();
         if (file_exists($strMapFile)) {
@@ -44,13 +53,13 @@ class RestRun{
 
         $strUri = str_replace('//', '/', $strUri);
         if (substr($strUri, strlen($strUri)-1, 1) == '/') {
-            substr($strUri, 0, strlen($strUri)-1);
+            $strUri = substr($strUri, 0, strlen($strUri)-1);
         }
         $strUriKey = str_replace('/', '_', $strUri);
 
-        if (isset($arrMap[$strUriKey])) {
+        if (isset($arrMap[$strUriKey . "_"])) {
             $strFileEnter = RestConstant::REST_TARGET() . DIRECTORY_SEPARATOR .
-                $strMethod . DIRECTORY_SEPARATOR . $arrMap[$strUriKey]['filename'] . ".php";
+                $strMethod . DIRECTORY_SEPARATOR . $arrMap[$strUriKey . "_"]['filename'] . ".php";
             include($strFileEnter);
             return;
         } else {
