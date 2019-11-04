@@ -14,7 +14,7 @@ class RestClientFileGetContentUtils {
      * @param array $header 头部信息Key-Value数组
      * @return string
      */
-    public static function get($url, $timeout=3, $header=""){
+    public static function get($url, $timeout=3, $header=array()){
         $opts = array(
             'http'=>array(
                 'method'=>"GET",
@@ -30,6 +30,8 @@ class RestClientFileGetContentUtils {
         }
         $context = stream_context_create($opts);
         $body = file_get_contents($url, false, $context);
+        RestLog::writeLog("请求地址【{$url}】，请求context【" . json_encode($context) . "】，响应内容【" .
+            $body ."】", "http.f.");
         return $body;
     }
 
@@ -41,7 +43,7 @@ class RestClientFileGetContentUtils {
      * @param array $header 头部信息Key-Value数组
      * @return string
      */
-    public static function post($url, $data=NULL, $timeout=3, $header=""){
+    public static function post($url, $data=NULL, $timeout=3, $header=array()){
         $opts = array(
             'http'=>array(
                 'method'=>"POST",
@@ -66,6 +68,8 @@ class RestClientFileGetContentUtils {
         }
         $context = stream_context_create($opts);
         $body = file_get_contents($url, false, $context);
+        RestLog::writeLog("请求地址【{$url}】，请求context【" .RestStringUtils::isBlank($context)?"": json_encode($context) . "】，响应内容【" .
+            $body ."】", "http.f.");
         return $body;
     }
 }
